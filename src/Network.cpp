@@ -237,7 +237,7 @@ void Network::processRequest(char *body, char *formData){
                         "button{font-size:250%; margin:1em}"
                       "</style></head>"
                       "<body style=\"background-color:lightyellow;\">"
-                      "<center><p><b>HomeSpan Setup</b></p></center>";
+                      "<center><p><b> "+ String(HTML_NAME) +" Setup</b></p></center>";
 
   if(!strncmp(body,"POST /configure ",16) &&                              // POST CONFIGURE
      strstr(body,"Content-Type: application/x-www-form-urlencoded")){     // check that content is from a form
@@ -263,7 +263,7 @@ void Network::processRequest(char *body, char *formData){
     getFormValue(formData,"code",setupCode,8);
 
     if(allowedCode(setupCode)){
-      responseBody+="<p><b>Settings saved!</b></p><p>Restarting HomeSpan.</p><p>Closing window...</p>";
+      responseBody+="<p><b>Settings saved!</b></p><p>Restarting "+ String(HTML_NAME) +".</p><p>Closing window...</p>";
       alarmTimeOut=millis()+2000;
       apStatus=1;
       
@@ -275,7 +275,7 @@ void Network::processRequest(char *body, char *formData){
   } else
 
   if(!strncmp(body,"GET /cancel ",12)){                                   // GET CANCEL
-    responseBody+="<p><b>Configuration Canceled!</b></p><p>Restarting HomeSpan.</p><p>Closing window...</p>";
+    responseBody+="<p><b>Configuration Canceled!</b></p><p>Restarting "+ String(HTML_NAME) +".</p><p>Closing window...</p>";
     alarmTimeOut=millis()+2000;
     apStatus=-1;
   } else
@@ -300,7 +300,7 @@ void Network::processRequest(char *body, char *formData){
       STATUS_UPDATE(start(LED_AP_CONNECTED),HS_AP_CONNECTED)
           
       responseBody+="<p>SUCCESS! Connected to:</p><p><b>" + String(wifiData.ssid) + "</b></p>";
-      responseBody+="<p>You may enter new 8-digit Setup Code below, or leave blank to retain existing code.</p>";
+      responseBody+="<p>You may enter an 8-digit Homekit Setup Code below, which is used when pairing in the Homekit app.</p>";
 
       responseBody+="<form action=\"/save\" method=\"post\">"
                     "<label for=\"code\">Setup Code:</label>"
@@ -320,7 +320,7 @@ void Network::processRequest(char *body, char *formData){
     STATUS_UPDATE(start(LED_AP_CONNECTED),HS_AP_CONNECTED)
     waitTime=2;
 
-    responseBody+="<p>Welcome to HomeSpan! This page allows you to configure the above HomeSpan device to connect to your WiFi network.</p>"
+    responseBody+="<p>Welcome to "+ String(HTML_NAME) +"! This page allows you to connect this device to your WiFi network.</p>"
                   "<p>The LED on this device should be <em>double-blinking</em> during this configuration.</p>"
                   "<form action=\"/configure\" method=\"post\">"
                   "<label for=\"ssid\">WiFi Network:</label>"
