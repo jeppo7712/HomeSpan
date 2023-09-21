@@ -1,4 +1,4 @@
-/*********************************************************************************
+ /*********************************************************************************
  *  MIT License
  *  
  *  Copyright (c) 2020-2023 Gregg E. Berman
@@ -135,6 +135,13 @@ void Network::apConfigure(){
   LOG0("\nReady.\n");
 
   while(1){                                  // loop until we get timed out (which will be accelerated if save/cancel selected)
+    delay(1);
+    
+    if (homeSpan.apLoopFunction)
+        homeSpan.apLoopFunction();
+
+    for(auto it=homeSpan.Loops.begin();it!=homeSpan.Loops.end();it++)                 // call loop() for all Services with over-ridden loop() methods
+      (*it)->loop();                           
 
     if(homeSpan.controlButton && homeSpan.controlButton->triggered(9999,3000)){
       LOG0("\n*** Access Point Terminated.  Restarting...\n\n");
