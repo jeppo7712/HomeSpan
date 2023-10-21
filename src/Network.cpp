@@ -275,7 +275,7 @@ void Network::processRequest(char *body, char *formData){
       apStatus=1;
       
     } else {
-    responseBody+="<meta http-equiv = \"refresh\" content = \"4; url = /wifi-status\" />"
+    responseBody+="<meta http-equiv = \"refresh\" content = \"4; url = /qr-code\" />"
                   "<p><b>Disallowed Setup Code - too simple!</b></p><p>Returning to configuration page...</p>";      
     }
     
@@ -287,6 +287,12 @@ void Network::processRequest(char *body, char *formData){
     apStatus=-1;
   } else
 
+  if(!strncmp(body,"GET /reboot ",12)){                                   // GET REBOOT
+    responseBody+="<p>Restarting "+ String(HTML_NAME) +".</p><p>Closing window...</p>";
+    alarmTimeOut=millis()+2000;
+    apStatus=1;
+  } else
+   
   if(!strncmp(body,"GET /wifi-status ",17)){                              // GET WIFI-STATUS
 
     LOG1("In Get WiFi Status...\n");
@@ -307,6 +313,13 @@ void Network::processRequest(char *body, char *formData){
       STATUS_UPDATE(start(LED_AP_CONNECTED),HS_AP_CONNECTED)
           
       responseBody+="<p>SUCCESS! Connected to:</p><p><b>" + String(wifiData.ssid) + "</b></p>";
+      responseBody+="<center><button style=\"font-size:300%\" onclick=\"document.location='/reboot'\">Save and Restart</button></center>";
+      responseBody+="<center>optional: <a href=\"document.location='/qr-code'\">Change homekit pairing code</a></center>";
+    }
+   
+  } else
+  if(!strncmp(body,"GET /qr-code ",13)){                              // QR CODE
+      
       responseBody+="<p>You may enter an 8-digit Homekit Setup Code below, which is used when pairing in the Homekit app.</p>";
 
       responseBody+="<form action=\"/save\" method=\"post\">"
@@ -316,8 +329,7 @@ void Network::processRequest(char *body, char *formData){
                     "</form>";
                     
       responseBody+="<center><button style=\"font-size:300%\" onclick=\"document.location='/cancel'\">CANCEL Configuration</button></center>";
-    }
-  
+
   } else                                                                
 
   if(!strstr(body,"wispr") && !strncmp(body,"GET /hotspot-detect.html ",25)){                             // GET LANDING-PAGE, but only if request does NOT contain "wispr" user agent
@@ -328,7 +340,7 @@ void Network::processRequest(char *body, char *formData){
     waitTime=2;
 
     responseBody+="<p>Welcome to "+ String(HTML_NAME) +"! This page allows you to connect this device to your WiFi network.</p>"
-                  "<p>The LED on this device should be <em>double-blinking</em> during this configuration.</p>"
+                  //"<p>The LED on this device should be <em>double-blinking</em> during this configuration.</p>"
                   "<form action=\"/configure\" method=\"post\">"
                   "<label for=\"ssid\">WiFi Network:</label>"
                   "<center><input size=\"32\" list=\"network\" name=\"network\" placeholder=\"Choose or Type\" required maxlength=" + String(MAX_SSID) + "></center>"
