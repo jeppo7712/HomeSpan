@@ -233,6 +233,7 @@ class Span{
   void (*wifiCallback)()=NULL;                                // optional callback function to invoke once WiFi connectivity is established
   void (*pairCallback)(boolean isPaired)=NULL;                // optional callback function to invoke when pairing is established (true) or lost (false)
   boolean autoStartAPEnabled=false;                           // enables auto start-up of Access Point when WiFi Credentials not found
+  void (*factoryResetFunction)()=NULL;                        // optional callback function to invoke when factory reset
   void (*apFunction)()=NULL;                                  // optional function to invoke when starting Access Point
   void (*apLoopFunction)()=NULL;                              // optional loop function to call when in Access Point
   void (*statusCallback)(HS_STATUS status)=NULL;              // optional callback when HomeSpan status changes
@@ -323,6 +324,7 @@ class Span{
   void setPairCallback(void (*f)(boolean isPaired)){pairCallback=f;}      // sets an optional user-defined function to call when Pairing is established (true) or lost (false)
   void setApFunction(void (*f)()){apFunction=f;}                          // sets an optional user-defined function to call when activating the WiFi Access Point  
   void setApLoopFunction(void (*f)()){apLoopFunction=f;}                  // sets an optional user-defined loop function to call when in the WiFi Access Point  
+  void setfactoryResetFunction(void (*f)()){factoryResetFunction=f;}      // sets an optional user-defined function to call when doing factory reset  
   void enableAutoStartAP(){autoStartAPEnabled=true;}                      // enables auto start-up of Access Point when WiFi Credentials not found
   void setWifiCredentials(const char *ssid, const char *pwd);             // sets WiFi Credentials
   void setStatusCallback(void (*f)(HS_STATUS status)){statusCallback=f;}        // sets an optional user-defined function to call when HomeSpan status changes
