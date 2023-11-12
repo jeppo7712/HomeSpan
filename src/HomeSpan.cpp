@@ -802,6 +802,8 @@ void Span::processSerialCommand(const char *c){
       nvs_erase_all(otaNVS);
       nvs_commit(otaNVS);
       WiFi.begin("none");  
+      if (factoryResetFunction)
+          factoryResetFunction();
       LOG0("\n*** FACTORY RESET!  Restarting...\n\n");
       reboot();
     }
