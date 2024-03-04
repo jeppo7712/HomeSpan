@@ -132,6 +132,13 @@ void Network::apConfigure(){
   LOG0("\nReady.\n");
 
   while(1){                                  // loop until we get timed out (which will be accelerated if save/cancel selected)
+    delay(1);
+
+    if (homeSpan.apLoopFunction)
+        homeSpan.apLoopFunction();
+
+    for(auto it=homeSpan.Loops.begin();it!=homeSpan.Loops.end();it++)                 // call loop() for all Services with over-ridden loop() methods
+      (*it)->loop();                           
 
     if(homeSpan.controlButton && homeSpan.controlButton->triggered(9999,3000)){
       LOG0("\n*** Access Point Terminated.  Restarting...\n\n");
@@ -244,7 +251,7 @@ void Network::processRequest(char *body, char *formData){
                         "button{font-size:250%; margin:1em}"
                       "</style></head>"
                       "<body style=\"background-color:lightyellow;\">"
-                      "<center><p><b>HomeSpan Setup</b></p></center>";
+                      "<center><p><b> "+ String(HTML_NAME) +" Setup</b></p></center>";
 
   if(!strncmp(body,"POST /configure ",16) &&                              // POST CONFIGURE
      strstr(body,"Content-Type: application/x-www-form-urlencoded")){     // check that content is from a form
@@ -270,21 +277,27 @@ void Network::processRequest(char *body, char *formData){
     getFormValue(formData,"code",setupCode,8);
 
     if(allowedCode(setupCode)){
-      responseBody+="<p><b>Settings saved!</b></p><p>Restarting HomeSpan.</p><p>Closing window...</p>";
+      responseBody+="<p><b>Settings saved!</b></p><p>Restarting "+ String(HTML_NAME) +".</p><p>Closing window...</p>";
       alarmTimeOut=millis()+2000;
       apStatus=1;
       
     } else {
-    responseBody+="<meta http-equiv = \"refresh\" content = \"4; url = /wifi-status\" />"
+    responseBody+="<meta http-equiv = \"refresh\" content = \"4; url = /qr-code\" />"
                   "<p><b>Disallowed Setup Code - too simple!</b></p><p>Returning to configuration page...</p>";      
     }
     
   } else
 
   if(!strncmp(body,"GET /cancel ",12)){                                   // GET CANCEL
-    responseBody+="<p><b>Configuration Canceled!</b></p><p>Restarting HomeSpan.</p><p>Closing window...</p>";
+    responseBody+="<p><b>Configuration Canceled!</b></p><p>Restarting "+ String(HTML_NAME) +".</p><p>Closing window...</p>";
     alarmTimeOut=millis()+2000;
     apStatus=-1;
+  } else
+   
+  if(!strncmp(body,"GET /reboot ",12)){                                   // GET REBOOT
+    responseBody+="<p>Restarting "+ String(HTML_NAME) +".</p><p>Closing window...</p>";
+    alarmTimeOut=millis()+2000;
+    apStatus=1;
   } else
 
   if(!strncmp(body,"GET /wifi-status ",17)){                              // GET WIFI-STATUS
@@ -307,7 +320,13 @@ void Network::processRequest(char *body, char *formData){
       STATUS_UPDATE(start(LED_AP_CONNECTED),HS_AP_CONNECTED)
           
       responseBody+="<p>SUCCESS! Connected to:</p><p><b>" + String(wifiData.ssid) + "</b></p>";
-      responseBody+="<p>You may enter new 8-digit Setup Code below, or leave blank to retain existing code.</p>";
+      responseBody+="<center><button style=\"font-size:300%\" onclick=\"document.location='/reboot'\">Save and Restart</button></center>";
+      responseBody+="<center>optional: <a href=\"/qr-code\">Change homekit pairing code</a></center>";
+    }
+
+  } else
+  if(!strncmp(body,"GET /qr-code ",13)){                              // QR CODE
+      responseBody+="<p>You may enter an 8-digit Homekit Setup Code below, which is used when pairing in the Homekit app.</p>";
 
       responseBody+="<form action=\"/save\" method=\"post\">"
                     "<label for=\"code\">Setup Code:</label>"
@@ -316,7 +335,6 @@ void Network::processRequest(char *body, char *formData){
                     "</form>";
                     
       responseBody+="<center><button style=\"font-size:300%\" onclick=\"document.location='/cancel'\">CANCEL Configuration</button></center>";
-    }
   
   } else                                                                
 
@@ -327,8 +345,8 @@ void Network::processRequest(char *body, char *formData){
     STATUS_UPDATE(start(LED_AP_CONNECTED),HS_AP_CONNECTED)
     waitTime=2;
 
-    responseBody+="<p>Welcome to HomeSpan! This page allows you to configure the above HomeSpan device to connect to your WiFi network.</p>"
-                  "<p>The LED on this device should be <em>double-blinking</em> during this configuration.</p>"
+    responseBody+="<p>Welcome to "+ String(HTML_NAME) +"! This page allows you to connect this device to your WiFi network.</p>"
+                  //"<p>The LED on this device should be <em>double-blinking</em> during this configuration.</p>"
                   "<form action=\"/configure\" method=\"post\">"
                   "<label for=\"ssid\">WiFi Network:</label>"
                   "<center><input size=\"32\" list=\"network\" name=\"network\" placeholder=\"Choose or Type\" required maxlength=" + String(MAX_SSID) + "></center>"
