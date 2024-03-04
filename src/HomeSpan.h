@@ -242,7 +242,9 @@ class Span{
   void (*weblogCallback)(String &)=NULL;                      // optional callback function to invoke after header table in Web Log is produced
   void (*pairCallback)(boolean isPaired)=NULL;                // optional callback function to invoke when pairing is established (true) or lost (false)
   boolean autoStartAPEnabled=false;                           // enables auto start-up of Access Point when WiFi Credentials not found
+  void (*factoryResetFunction)()=NULL;                        // optional callback function to invoke when factory reset
   void (*apFunction)()=NULL;                                  // optional function to invoke when starting Access Point
+  void (*apLoopFunction)()=NULL;                              // optional loop function to call when in Access Point
   void (*statusCallback)(HS_STATUS status)=NULL;              // optional callback when HomeSpan status changes
   void (*rebootCallback)(uint8_t)=NULL;                       // optional callback when device reboots
   
@@ -323,6 +325,8 @@ class Span{
   Span& setApSSID(const char *ssid){network.apSSID=ssid;return(*this);}                  // sets Access Point SSID
   Span& setApPassword(const char *pwd){network.apPassword=pwd;return(*this);}            // sets Access Point Password
   Span& setApTimeout(uint16_t nSec){network.lifetime=nSec*1000;return(*this);}           // sets Access Point Timeout (seconds)
+  void setApLoopFunction(void (*f)()){apLoopFunction=f;}                                 // sets an optional user-defined loop function to call when in the WiFi Access Point  
+  void setfactoryResetFunction(void (*f)()){factoryResetFunction=f;}                     // sets an optional user-defined function to call when doing factory reset  
   Span& setCommandTimeout(uint16_t nSec){comModeLife=nSec*1000;return(*this);}           // sets Command Mode Timeout (seconds)
   Span& setLogLevel(int level){logLevel=level;return(*this);}                            // sets Log Level for log messages (0=baseline, 1=intermediate, 2=all, -1=disable all serial input/output)
   int getLogLevel(){return(logLevel);}                                                   // get Log Level
