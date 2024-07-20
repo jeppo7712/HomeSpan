@@ -323,7 +323,7 @@ void Network::processRequest(char *body, char *formData){
           
       responseBody+="<p>SUCCESS! Connected to:</p><p><b>" + String(wifiData.ssid) + "</b></p>";
       responseBody+="<center><button style=\"font-size:300%\" onclick=\"document.location='/reboot'\">Save and Restart</button></center>";
-      responseBody+="<center>optional: <a href=\"/qr-code\">Change homekit pairing code</a></center>";
+      //responseBody+="<center>optional: <a href=\"/qr-code\">Change homekit pairing code</a></center>";
     }
 
   } else
